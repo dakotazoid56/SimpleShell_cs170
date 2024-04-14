@@ -1,0 +1,8 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     '/Users/dakotabarnes/Develop/cs170/SimpleShell_cs170/simple_shell'
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _runcommand, symObjAddr: 0x0, symBinAddr: 0x100003D50, symSize: 0x50 }
+  - { offsetInCU: 0x41, offset: 0x41, size: 0x8, addend: 0x0, symName: _runcommand, symObjAddr: 0x0, symBinAddr: 0x100003D50, symSize: 0x50 }
+  - { offsetInCU: 0x81, offset: 0x81, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x50, symBinAddr: 0x100003DA0, symSize: 0x1BB }
+...

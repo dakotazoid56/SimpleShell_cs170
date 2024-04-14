@@ -30,9 +30,10 @@ void runcommand(char* command, char** args) {
   }
 }
 
-int main() {
+int main(void) {
   char line[MAX_LINE_LENGTH];
-  //printf("shell: "); 
+
+  printf("shell: "); 
   while(fgets(line, MAX_LINE_LENGTH, stdin)) {
     // Build the command and arguments, using execv conventions.
 
@@ -56,7 +57,7 @@ int main() {
         exit(0);
       runcommand(command, arguments);
     }
-    //printf("shell: "); 
+    printf("shell: "); 
   }
   return 0;
 }

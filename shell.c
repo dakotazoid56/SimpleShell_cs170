@@ -82,6 +82,10 @@ void fchild(char **args,int inPipe, int outPipe)
     /*Call dup2 to setup redirection, and then call excevep*/
 
     /*Your solution*/
+    
+    dup2(inPipe,0);
+
+    execReturn = execvp(args[0], args);
 
     if (execReturn < 0) 
     { 
@@ -127,7 +131,10 @@ void runcmd(char * linePtr, int length, int inPipe, int outPipe)
   {
     /*Exit if seeing "exit" command*/
     /*Your solution*/
-            
+    if (strcmp(args[0], "exit") == 0) {
+      exit(0);
+    }
+    // (cat/command) < (file)        
     if (*nextChar == '<' && inPipe == 0) 
     {
       //It is input redirection, setup the file name to read from
@@ -139,12 +146,17 @@ void runcmd(char * linePtr, int length, int inPipe, int outPipe)
 
       /* Change inPipe so it follows the redirection */ 
       /*Your solutuon*/
+      inPipe = open(nextChar,O_CREAT|O_TRUNC|O_WRONLY, 0644);
+      
+      fchild(args,inPipe,outPipe);
 
     }
 
     if (*nextChar == '>')
     {   /*It is output redirection, setup the file name to write*/
         /*Your solutuon*/
+        fchild(args,inPipe=0,outPipe=1);
+
           
     }
 
@@ -154,7 +166,6 @@ void runcmd(char * linePtr, int length, int inPipe, int outPipe)
       /*Your solution*/
       /*execute the remaining subcommands, but setup the input using this pipe*/
       /*Your solution*/
-
       return;
     }
 
@@ -172,7 +183,7 @@ void runcmd(char * linePtr, int length, int inPipe, int outPipe)
 
 int main(int argc, char *argv[])
 {
-  /*Your solution*/
+  /*Your solution*/ 
   char lineIn[1024];
 
   while(1) 
