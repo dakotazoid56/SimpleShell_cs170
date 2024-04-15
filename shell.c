@@ -82,8 +82,16 @@ void fchild(char **args,int inPipe, int outPipe)
     /*Call dup2 to setup redirection, and then call excevep*/
 
     /*Your solution*/
-    
-    dup2(inPipe,0);
+
+    //For >
+    if(outPipe != 1) {
+      dup2(outPipe, 1);
+      close(outPipe);
+    }
+    if(inPipe != 0) {
+      dup2(inPipe, 0);
+      close(inPipe);
+    }
 
     execReturn = execvp(args[0], args);
 
@@ -108,6 +116,8 @@ void fchild(char **args,int inPipe, int outPipe)
     
   if(outPipe != 1)
     close(outPipe); /*clean up, release file control  resource*/
+
+  //wait(NULL);   //Wait for child process to finish
 }
 
 
@@ -139,33 +149,49 @@ void runcmd(char * linePtr, int length, int inPipe, int outPipe)
     {
       //It is input redirection, setup the file name to read from
       char * in[length];
-      
+
       //nextChar+1 moves the character position after <,
       //thus points to a file name
       nextChar = parse(nextChar+1,in); 
 
       /* Change inPipe so it follows the redirection */ 
       /*Your solutuon*/
-      inPipe = open(nextChar,O_CREAT|O_TRUNC|O_WRONLY, 0644);
+      inPipe = open(in[0],O_RDONLY);
       
-      fchild(args,inPipe,outPipe);
-
     }
-
+    //ls > temp
     if (*nextChar == '>')
     {   /*It is output redirection, setup the file name to write*/
         /*Your solutuon*/
-        fchild(args,inPipe=0,outPipe=1);
 
+      char * in[length];
+
+      nextChar = parse(nextChar+1,in); 
+
+      outPipe = open(in[0],O_CREAT|O_TRUNC|O_WRONLY);
           
     }
 
     if (*nextChar == '|')
     { /*It is a pipe, setup the input and output descriptors */
       /*execute the subcommand that has been parsed, but setup the output using this pipe*/
+      int pipefd[2];
+      pipe(pipefd);
+
+      fchild(args, inPipe, pipefd[1]);
+      close(pipefd[1]);  
+
+      if (inPipe != 0) {
+        close(inPipe);  // Close previous input pipe if not standard input
+      }
+
       /*Your solution*/
       /*execute the remaining subcommands, but setup the input using this pipe*/
       /*Your solution*/
+      
+      runcmd(nextChar + 1, length, pipefd[0], outPipe);
+      close(pipefd[0]);
+        
       return;
     }
 
@@ -185,6 +211,7 @@ int main(int argc, char *argv[])
 {
   /*Your solution*/ 
   char lineIn[1024];
+  //printf("shell: "); 
 
   while(1) 
   {
@@ -208,6 +235,8 @@ int main(int argc, char *argv[])
   
     /*Wait for the child completes */
     /*Your solution*/
+    wait(NULL);
+    //printf("shell: "); 
 
   }
 
